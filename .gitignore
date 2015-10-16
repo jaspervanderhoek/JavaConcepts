@@ -41,3 +41,12 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+.classpath
+.project
+deployment/
+.mendix-cache/
+proxies/
+javasource/com/
+javasource/system/
+Concepts.mpr.bak
+*.launch
