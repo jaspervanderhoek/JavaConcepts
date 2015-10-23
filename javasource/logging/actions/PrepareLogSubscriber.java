@@ -11,8 +11,10 @@ package logging.actions;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
+
 import com.mendix.core.Core;
 import com.mendix.core.CoreException;
+import com.mendix.logging.ILogNode;
 import com.mendix.logging.LogLevel;
 import com.mendix.logging.LogMessage;
 import com.mendix.logging.LogSubscriber;
@@ -55,6 +57,8 @@ public class PrepareLogSubscriber extends CustomJavaAction<Boolean>
 		else 
 			LogProcessor.getInstance(this.LogEntityName).stop();
 
+		LogProcessor.getInstance(this.LogEntityName).subscribe(Core.getLogger("WebServices"), LogLevel.TRACE);
+		
 		return true;
 		// END USER CODE
 	}
@@ -80,6 +84,8 @@ public class PrepareLogSubscriber extends CustomJavaAction<Boolean>
 
 		public enum LogType {
 			Webservice
+			//,Stocks
+			//,Job
 		}
 
 		/**
@@ -94,7 +100,10 @@ public class PrepareLogSubscriber extends CustomJavaAction<Boolean>
 		{
 			super("LogProcessor", LogLevel.INFO);
 			this.entityName = entityName;
-			this.supportedLognodes.put("Webservices", LogType.Webservice);
+			this.supportedLognodes.put("WebServices", LogType.Webservice);
+			//this.supportedLognodes.put("Stocks", LogType.Stocks);
+			//this.supportedLognodes.put("Job", LogType.Job);
+			
 			
 			IMetaObject objInfo = Core.getMetaObject(this.entityName);
 			if( objInfo == null )
@@ -128,7 +137,10 @@ public class PrepareLogSubscriber extends CustomJavaAction<Boolean>
 		public void processMessage( LogMessage message ) {
 			if ( !this.stopped ) {
 				String nodeName = message.node.name();
-
+//				for( Entry<ILogNode, LogLevel> e : this.getSubscriptions().entrySet() ) {
+//					System.out.println( "Lognode: " + e.getKey().name() + " level " + e.getValue() );
+//				}
+				
 				if ( this.supportedLognodes.containsKey(nodeName) ) {
 					LogType currentType = this.supportedLognodes.get(nodeName);
 					try {
