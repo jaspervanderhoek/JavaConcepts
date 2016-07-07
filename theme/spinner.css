@@ -1,0 +1,63 @@
+.has-spinner .glyphicon {
+/* initial, do not display*/
+display: inline-block;
+opacity: 0;
+width: 0;
+-webkit-transition: opacity 0.25s, width 0.25s;
+-moz-transition: opacity 0.25s, width 0.25s;
+-o-transition: opacity 0.25s, width 0.25s;
+transition: opacity 0.25s, width 0.25s;
+/* delay animation, for fast responses*/
+-webkit-transition-delay: 0.8s; /* Safari */
+transition-delay: 0.8s;
+}
+.has-spinner:disabled {
+/* show the progress pointer */
+pointer-events: auto;
+cursor: progress;
+}
+.has-spinner:disabled .glyphicon {
+/* show the spinner */
+opacity: 1;
+width: auto;
+/* This doesn't work, just fix for unknown width elements */
+/* make the spinner spin*/
+-moz-animation: spin 2s infinite linear;
+-o-animation: spin 2s infinite linear;
+-webkit-animation: spin 2s infinite linear;
+animation: spin 2s infinite linear;
+}
+/* set width for different btn sizes */
+.has-spinner.btn-mini:disabled .glyphicon-refresh {
+width: 10px;
+}
+.has-spinner.btn-small:disabled .glyphicon-refresh {
+width: 13px;
+}
+.has-spinner.btn:disabled .glyphicon-refresh {
+width: 16px;
+}
+.has-spinner.btn-large:disabled .glyphicon-refresh {
+width: 19px;
+}
+/* create the animation */
+@-moz-keyframes spin {
+0% { -moz-transform: rotate(0deg)}
+100% {-moz-transform: rotate(359deg)}
+}
+@-webkit-keyframes spin {
+0% {-webkit-transform: rotate(0deg)}
+100% {-webkit-transform: rotate(359deg)}
+}
+@-o-keyframes spin {
+0% {-o-transform: rotate(0deg)}
+100% {-o-transform: rotate(359deg)}
+}
+@-ms-keyframes spin {
+0% {-ms-transform: rotate(0deg) }
+100% { -ms-transform: rotate(359deg)}
+}
+@keyframes spin {
+0% { transform: rotate(0deg)}
+100% { transform: rotate(359deg)}
+}

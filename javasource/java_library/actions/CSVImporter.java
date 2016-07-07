@@ -9,12 +9,16 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
 import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.UUID;
@@ -26,11 +30,13 @@ import replication.MetaInfo;
 import replication.ReplicationSettings;
 import replication.ReplicationSettings.KeyType;
 import replication.ReplicationSettings.MendixReplicationException;
-import replication.ReplicationSettings.SynchronizeAction;
+import replication.ReplicationSettings.ObjectSearchAction;
+import replication.ValueParser.ParseException;
 import replication.ValueParser;
 import replication.implementation.CustomReplicationSettings;
 import replication.implementation.ErrorHandler;
 import replication.interfaces.IValueParser;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import au.com.bytecode.opencsv.CSVParser;
 import bestpractices.proxies.Customer;
 
@@ -49,6 +55,18 @@ public class CSVImporter {
 
 	public static void importCSVFile( IContext context, LinkedHashMap<String, String> columnList, InputStream fileInputStream ) throws CoreException {
 		CustomReplicationSettings settings = new CustomReplicationSettings(context, Customer.getType(), new ErrorHandler());
+		settings.getObjectConfiguration(Customer.getType()).setObjectSearchAction(ObjectSearchAction.CreateEverything);
+		
+		/*
+		 * For find create do:
+		 * 
+		 *	settings.getObjectConfiguration(Customer.getType())
+		 *		.setObjectSearchAction(ObjectSearchAction.CreateEverything)
+		 *		.addMember("1", "Name", true, true); 
+		 *
+		 * It is optional to specify all attributes that are present but not a key
+		 */
+		
 
 		for( Entry<String, String> entry : columnList.entrySet() ) {
 			settings.addColumnMapping(entry.getKey(), entry.getValue(), KeyType.NoKey, false, null);
@@ -150,129 +168,25 @@ public class CSVImporter {
 
 		return f2;
 	}
-
 	public static class ExcelValueParser extends ValueParser {
-		private Map<String, IValueParser> customValueParsers;
 
 		public ExcelValueParser( Map<String, IValueParser> customValueParsers, ReplicationSettings settings ) {
-			super(settings);
-			this.customValueParsers = customValueParsers;
-		}
-
-		private String getKeyValue( PrimitiveType type, String columnNumber, Object[] rs ) throws ParseException {
-			return getKeyValueByPrimitiveType(type, this.getValue(type, columnNumber, rs));
-		}
-
-		public String buildObjectKey( Object[] objects, TreeMap<String, Boolean> keys ) throws ParseException {
-			StringBuilder keyBuilder = new StringBuilder();
-
-			if ( this.settings.synchronize() != SynchronizeAction.CreateEverything ) {
-				try {
-					for( Entry<String, Boolean> entry : keys.entrySet() ) {
-						String keyAlias = entry.getKey();
-						Boolean isCaseSensitive = entry.getValue();
-
-						String keyValue;
-						if ( this.customValueParsers.containsKey(keyAlias) ) {
-							Object value = null;
-							IValueParser vp = this.customValueParsers.get(keyAlias);
-							value = vp.parseValue(objects[Integer.valueOf(keyAlias)]);
-
-							keyValue = getTrimmedValue(value);
-						}
-						else
-							keyValue = this.getKeyValue(this.settings.getMemberType(keyAlias), keyAlias, objects);
-
-						keyBuilder.append(this.processKeyValue(isCaseSensitive, keyValue)).append(keySeparator);
-					}
-				}
-				catch( CoreException e ) {
-					throw new ParseException(e);
-				}
-			}
-			else {
-				keyBuilder.append(UUID.randomUUID().toString());
-			}
-
-			return keyBuilder.toString();
+			super(settings, customValueParsers);
 		}
 
 		@Override
-		protected boolean hasCustomHandling( String column ) {
-			return this.customValueParsers.containsKey(column);
-		}
-
-		public Object getValue( PrimitiveType type, String column, Object[] objects ) throws ParseException {
-			try {
-				if ( this.hasCustomHandling(column) ) {
-					Object value = this.customValueParsers.get(column).parseValue(objects[Integer.valueOf(column)]);
-					// Object value = executeMicroflow(, );
-					if ( validateParsedValue(type, value) )
-						return value;
-
-					throw new ParseException("The value in column: " + column + " was processed by a microflow. But an invalid value was returned, the type was expected to be a " + type.name() + " but the returned value is of type: " + value.getClass().getSimpleName() + " \r\nReturnedValue: " + value);
-				}
-			}
-			catch( ParseException e ) {
-				throw e;
-			}
-			catch( CoreException e ) {
-				throw new ParseException(e);
-			}
-
-			try {
-				if ( objects.length > Integer.valueOf(column) )
-					return ExcelValueParser.getValueByType(type, objects[Integer.valueOf(column)]);
-				else {
-					Core.getLogger("ValueParser").warn("There is no column nr: " + column + " found on the current row");
-					return null;
-				}
-			}
-			catch( Exception e ) {
-				throw new ParseException("The value in column: " + column + " is not valid the error message was: " + e.getMessage());
-			}
-		}
-
-		@SuppressWarnings("static-access")
-		public static Object getValueByType( PrimitiveType type, Object value ) throws ParseException {
-			Object returnValue = null;
-			switch (type) {
-			case DateTime:
-				if ( value instanceof Double ) {
-					if ( HSSFDateUtil.isValidExcelDate((Double) value) ) {
-
-						// ----------------- WORK AROUND ----------
-						int wholeDays = (int) Math.floor((Double) value);
-						int millisecondsInDay = (int) (((Double) value - wholeDays) * ((24 * 60 * 60) * 1000L) + 0.5);
-						Calendar calendar = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
-						setCalendar(calendar, wholeDays, millisecondsInDay, false);
-						returnValue = calendar.getTime();
-						// returnValue = getDateValue(HSSFDateUtil.getJavaDate((Double)value));
-					}
-					else
-						throw new ParseException("The value was not stored in excel as a valid date.");
-				}
-				else if ( value instanceof String || value instanceof Long ) {
-					returnValue = getDateValue(value);
-				}
-				else if ( value != null )
-					throw new ParseException("The value(" + value + ") is of the wrong type, it was not stored in excel as a valid date.");
-
-				break;
-			default:
-				returnValue = ValueParser.getValueByType(type, value);
-			}
-			return returnValue;
+		public Object getValueFromDataSet( String column, PrimitiveType type, Object dataSet ) throws ParseException {
+			throw new NotImplementedException();
 		}
 
 		/**
 		 * Given an Excel date with either 1900 or 1904 date windowing, converts it to a java.util.Date.
 		 * 
-		 * NOTE: If the default <code>TimeZone</code> in Java uses Daylight Saving Time then the conversion back to an
-		 * Excel date may not give the same value, that is the comparison
-		 * <CODE>excelDate == getExcelDate(getJavaDate(excelDate,false))</CODE> is not always true. For example if
-		 * default timezone is <code>Europe/Copenhagen</code>, on 2004-03-28 the minute after 01:59 CET is 03:00 CEST,
-		 * if the excel date represents a time between 02:00 and 03:00 then it is converted to past 03:00 summer time
+		 * NOTE: If the default <code>TimeZone</code> in Java uses Daylight Saving Time then the conversion back to an Excel
+		 * date may not give the same value, that is the comparison
+		 * <CODE>excelDate == getExcelDate(getJavaDate(excelDate,false))</CODE> is not always true. For example if default
+		 * timezone is <code>Europe/Copenhagen</code>, on 2004-03-28 the minute after 01:59 CET is 03:00 CEST, if the excel
+		 * date represents a time between 02:00 and 03:00 then it is converted to past 03:00 summer time
 		 * 
 		 * @param date The Excel date.
 		 * @param use1904windowing true if date uses 1904 windowing, or false if using 1900 date windowing.
@@ -280,7 +194,7 @@ public class CSVImporter {
 		 * @see java.util.TimeZone
 		 */
 		@SuppressWarnings("static-access")
-		public static Date getJavaDate( double date, boolean use1904windowing ) {
+		public Date getJavaDate( double date, boolean use1904windowing ) {
 			if ( !HSSFDateUtil.isValidExcelDate(date) ) {
 				return null;
 			}
@@ -291,7 +205,7 @@ public class CSVImporter {
 			return calendar.getTime();
 		}
 
-		public static void setCalendar( Calendar calendar, int wholeDays, int millisecondsInDay, boolean use1904windowing ) {
+		public void setCalendar( Calendar calendar, int wholeDays, int millisecondsInDay, boolean use1904windowing ) {
 			int startYear = 1900;
 			int dayAdjust = -1; // Excel thinks 2/29/1900 is a valid date, which it isn't
 			if ( use1904windowing ) {
