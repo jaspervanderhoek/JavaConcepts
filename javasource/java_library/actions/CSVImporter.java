@@ -9,19 +9,12 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.regex.Pattern;
-import java.util.TimeZone;
-import java.util.TreeMap;
-import java.util.UUID;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
@@ -31,13 +24,11 @@ import replication.ReplicationSettings;
 import replication.ReplicationSettings.KeyType;
 import replication.ReplicationSettings.MendixReplicationException;
 import replication.ReplicationSettings.ObjectSearchAction;
-import replication.ValueParser.ParseException;
 import replication.ValueParser;
 import replication.implementation.CustomReplicationSettings;
 import replication.implementation.ErrorHandler;
 import replication.interfaces.IValueParser;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-import au.com.bytecode.opencsv.CSVParser;
 import bestpractices.proxies.Customer;
 
 import com.ibm.icu.text.CharsetDetector;
@@ -47,6 +38,7 @@ import com.mendix.core.CoreException;
 import com.mendix.logging.ILogNode;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.meta.IMetaPrimitive.PrimitiveType;
+import com.opencsv.CSVParser;
 
 public class CSVImporter {
 	private static final ILogNode _logger = Core.getLogger("CSVImporter");
@@ -86,36 +78,40 @@ public class CSVImporter {
 			BufferedReader reader = new BufferedReader(new FileReader(tmpFile));
 			tmpFile.deleteOnExit();
 			CSVParser parser = new CSVParser();
-
-			String nextLine;
-			String[] content;
-			while( (nextLine = reader.readLine()) != null ) {
-				colNr = 0;
-				if ( lineNumber != 0 ) {
-					content = parser.parseLine(nextLine);
-					if ( content.length == 1 )
-						content = parser.parseLine(content[0]);
-
-					for( Entry<String, String> entry : columnList.entrySet() ) {
-						try {
-							if ( _logger.isDebugEnabled() )
-								_logger.debug(entry.getKey() + " - NrOfValues" + content.length);
-							if ( colNr < content.length ) {
-								info.addValue(String.valueOf(lineNumber), entry.getKey(), content[colNr]);
-								colNr++;
+			
+			try {
+				String nextLine;
+				String[] content;
+				while( (nextLine = reader.readLine()) != null ) {
+					colNr = 0;
+					if ( lineNumber != 0 ) {
+						content = parser.parseLine(nextLine);
+						if ( content.length == 1 )
+							content = parser.parseLine(content[0]);
+	
+						for( Entry<String, String> entry : columnList.entrySet() ) {
+							try {
+								if ( _logger.isDebugEnabled() )
+									_logger.debug(entry.getKey() + " - NrOfValues" + content.length);
+								if ( colNr < content.length ) {
+									info.addValue(String.valueOf(lineNumber), entry.getKey(), content[colNr]);
+									colNr++;
+								}
+								else {
+									break;
+								}
 							}
-							else {
-								break;
+							catch( Exception e ) {
+								throw new Exception("Error occured while processing line: " + (1 + lineNumber) + ", the error was: " + e.getMessage(), e);
 							}
-						}
-						catch( Exception e ) {
-							throw new Exception("Error occured while processing line: " + (1 + lineNumber) + ", the error was: " + e.getMessage(), e);
 						}
 					}
+					lineNumber++;
 				}
-				lineNumber++;
 			}
-			reader.close();
+			finally { 
+				reader.close();
+			}
 		}
 		catch( Exception e ) {
 			throw new MendixReplicationException("Unable to import CSV file", e);
