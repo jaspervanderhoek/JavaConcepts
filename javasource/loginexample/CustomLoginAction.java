@@ -64,7 +64,7 @@ public class CustomLoginAction extends UserAction<ISession> {
                         ( roles != null && roles.size() > 0) ) {
                 this.lock.lock();
                 try {
-                    session = Core.initializeSession(context, user, null, null);
+                    session = Core.initializeSession(user, null);
                 }
                 finally {
                     this.lock.unlock();

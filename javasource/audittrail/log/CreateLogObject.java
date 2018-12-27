@@ -90,7 +90,7 @@ public class CreateLogObject {
 			_logNode.debug("Evaluating audit log for object: " + auditableObject.getType() + "(" + auditableObject.getId().toLong() + "), state: " + auditableObject.getState() + "/" + logType );
 		
 		
-		IContext sudoContext = context.getSudoContext();
+		IContext sudoContext = Core.createSystemContext();
 		IMendixObject logObject = Core.instantiate( sudoContext, Log.getType() );;
 		IMendixObject userObject = null;
 		
