@@ -18,23 +18,22 @@ import java.util.ArrayList;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
 import com.mendix.core.Core;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 import com.mendix.webui.CustomJavaAction;
-
 import system.proxies.FileDocument;
 
-public class CreateZipFile extends CustomJavaAction<java.lang.Boolean> {
+public class CreateZipFile extends CustomJavaAction<java.lang.Boolean>
+{
 	private java.util.List<IMendixObject> __ExportFileList;
 	private java.util.List<system.proxies.FileDocument> ExportFileList;
 	private IMendixObject __TargetZipDocument;
 	private system.proxies.FileDocument TargetZipDocument;
 	private java.lang.String TargetFileName;
 
-	public CreateZipFile(IContext context, java.util.List<IMendixObject> ExportFileList,
-			IMendixObject TargetZipDocument, java.lang.String TargetFileName) {
+	public CreateZipFile(IContext context, java.util.List<IMendixObject> ExportFileList, IMendixObject TargetZipDocument, java.lang.String TargetFileName)
+	{
 		super(context);
 		this.__ExportFileList = ExportFileList;
 		this.__TargetZipDocument = TargetZipDocument;
@@ -42,14 +41,14 @@ public class CreateZipFile extends CustomJavaAction<java.lang.Boolean> {
 	}
 
 	@Override
-	public java.lang.Boolean executeAction() throws Exception {
+	public java.lang.Boolean executeAction() throws Exception
+	{
 		this.ExportFileList = new java.util.ArrayList<system.proxies.FileDocument>();
 		if (__ExportFileList != null)
 			for (IMendixObject __ExportFileListElement : __ExportFileList)
 				this.ExportFileList.add(system.proxies.FileDocument.initialize(getContext(), __ExportFileListElement));
 
-		this.TargetZipDocument = __TargetZipDocument == null ? null
-				: system.proxies.FileDocument.initialize(getContext(), __TargetZipDocument);
+		this.TargetZipDocument = __TargetZipDocument == null ? null : system.proxies.FileDocument.initialize(getContext(), __TargetZipDocument);
 
 		// BEGIN USER CODE
 		// Create a buffer for reading the files
@@ -106,7 +105,8 @@ public class CreateZipFile extends CustomJavaAction<java.lang.Boolean> {
 	 * Returns a string representation of this action
 	 */
 	@Override
-	public java.lang.String toString() {
+	public java.lang.String toString()
+	{
 		return "CreateZipFile";
 	}
 

@@ -16,9 +16,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.json.simple.JSONObject;
-
 import com.mendix.core.Core;
 import com.mendix.core.CoreException;
 import com.mendix.core.objectmanagement.member.MendixAutoNumber;
