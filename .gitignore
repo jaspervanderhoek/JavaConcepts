@@ -51,3 +51,4 @@ javasource/system/
 Concepts.mpr.bak
 *.launch
 GPUCache/
+*.lock

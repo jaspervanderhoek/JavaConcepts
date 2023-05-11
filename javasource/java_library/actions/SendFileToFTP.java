@@ -39,7 +39,7 @@ public class SendFileToFTP extends CustomJavaAction<java.lang.Boolean>
 	@java.lang.Override
 	public java.lang.Boolean executeAction() throws Exception
 	{
-		this.DocumentToExport = __DocumentToExport == null ? null : system.proxies.FileDocument.initialize(getContext(), __DocumentToExport);
+		this.DocumentToExport = this.__DocumentToExport == null ? null : system.proxies.FileDocument.initialize(getContext(), __DocumentToExport);
 
 		// BEGIN USER CODE
 		FTPConnector connector = new FTPConnector(this.ftpHostName, (this.ftpPort != null ? this.ftpPort.intValue() : null), this.ftpUserName, this.ftpPassword);
@@ -58,6 +58,7 @@ public class SendFileToFTP extends CustomJavaAction<java.lang.Boolean>
 
 	/**
 	 * Returns a string representation of this action
+	 * @return a string representation of this action
 	 */
 	@java.lang.Override
 	public java.lang.String toString()

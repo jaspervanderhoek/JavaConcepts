@@ -10,16 +10,13 @@
 package sqlquery.actions;
 
 import static com.mendix.core.Core.dataStorage;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
-
 import org.apache.commons.lang3.exception.ExceptionUtils;
-
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 import com.mendix.webui.CustomJavaAction;
@@ -38,7 +35,7 @@ public class RunQuery extends CustomJavaAction<java.lang.Boolean>
 	@java.lang.Override
 	public java.lang.Boolean executeAction() throws Exception
 	{
-		this.Query = __Query == null ? null : sqlquery.proxies.Query.initialize(getContext(), __Query);
+		this.Query = this.__Query == null ? null : sqlquery.proxies.Query.initialize(getContext(), __Query);
 
 		// BEGIN USER CODE
 		try {
@@ -54,6 +51,7 @@ public class RunQuery extends CustomJavaAction<java.lang.Boolean>
 
 	/**
 	 * Returns a string representation of this action
+	 * @return a string representation of this action
 	 */
 	@java.lang.Override
 	public java.lang.String toString()

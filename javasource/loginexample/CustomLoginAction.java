@@ -1,22 +1,17 @@
 package loginexample;
 
-import com.mendix.core.Core;
-import com.mendix.systemwideinterfaces.core.*;
-
-import system.proxies.User;
-
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
-/**
- * Created by IntelliJ IDEA.
- * User: pbosse
- * Date: 08/11/13
- * Time: 10:10 AM
- * Copyright Ciena
- */
+import com.mendix.core.Core;
+import com.mendix.systemwideinterfaces.core.AuthenticationRuntimeException;
+import com.mendix.systemwideinterfaces.core.IContext;
+import com.mendix.systemwideinterfaces.core.ISession;
+import com.mendix.systemwideinterfaces.core.IUser;
+import com.mendix.systemwideinterfaces.core.UserAction;
+
+
 public class CustomLoginAction extends UserAction<ISession> {
     private final String username;
     private final String password;
@@ -47,21 +42,21 @@ public class CustomLoginAction extends UserAction<ISession> {
 				/*
 				 * TODO Implement the custom login action, with a microflow call, webservice,etc..
 				 */
-            HashMap<String, Object> mfParameters = new HashMap<String, Object>();
-            mfParameters.put("username", this.username);
-            mfParameters.put("password", this.password);
-            loginAllowed = Core.execute(context, "VWAN_NSM.WebServices.Login.Login", mfParameters);
+
+            loginAllowed = Core.microflowCall("VWAN_NSM.WebServices.Login.Login")
+            	.withParam("username", this.username)
+            	.withParam("password", this.password)
+            	.execute(context);
 
 
             if( loginAllowed != null && loginAllowed == true ) {
                 ISession session = null;
                 IUser user = Core.getUser(context, this.username);
-                @SuppressWarnings("unchecked")
-                List<IMendixIdentifier> roles = ((List<IMendixIdentifier>) user.getMendixObject().getValue(context, User.MemberNames.UserRoles.toString()));
+                Set<String> roles = user.getUserRoleNames();
 
-                if ( (Boolean) user.getMendixObject().getValue(context, User.MemberNames.Active.toString()) &&
-                        !(Boolean) user.getMendixObject().getValue(context, User.MemberNames.Blocked.toString()) &&
-                        ( roles != null && roles.size() > 0) ) {
+                if ( user.isActive() &&
+                    !user.isBlocked() &&
+                    ( roles != null && roles.size() > 0) ) {
                 this.lock.lock();
                 try {
                     session = Core.initializeSession(user, null);

@@ -10,7 +10,6 @@
 package calendarinvite.actions;
 
 import java.util.Properties;
-
 import javax.activation.MailcapCommandMap;
 import javax.activation.MimetypesFileTypeMap;
 import javax.mail.Address;
@@ -27,7 +26,6 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.webui.CustomJavaAction;
 
@@ -109,6 +107,7 @@ public class Appointment_SendNotification extends CustomJavaAction<java.lang.Boo
 
 	/**
 	 * Returns a string representation of this action
+	 * @return a string representation of this action
 	 */
 	@java.lang.Override
 	public java.lang.String toString()

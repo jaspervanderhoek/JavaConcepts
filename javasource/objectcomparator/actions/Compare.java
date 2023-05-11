@@ -40,9 +40,9 @@ public class Compare extends CustomJavaAction<java.util.List<IMendixObject>>
 	@java.lang.Override
 	public java.util.List<IMendixObject> executeAction() throws Exception
 	{
-		this.ComparableTarget = __ComparableTarget == null ? null : objectcomparator.proxies.Comparable.initialize(getContext(), __ComparableTarget);
+		this.ComparableTarget = this.__ComparableTarget == null ? null : objectcomparator.proxies.Comparable.initialize(getContext(), __ComparableTarget);
 
-		this.ComparatorSource = __ComparatorSource == null ? null : objectcomparator.proxies.Comparator.initialize(getContext(), __ComparatorSource);
+		this.ComparatorSource = this.__ComparatorSource == null ? null : objectcomparator.proxies.Comparator.initialize(getContext(), __ComparatorSource);
 
 		// BEGIN USER CODE
 
@@ -102,6 +102,7 @@ public class Compare extends CustomJavaAction<java.util.List<IMendixObject>>
 
 	/**
 	 * Returns a string representation of this action
+	 * @return a string representation of this action
 	 */
 	@java.lang.Override
 	public java.lang.String toString()

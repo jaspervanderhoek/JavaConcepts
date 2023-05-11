@@ -15,6 +15,17 @@ import java.util.Map.Entry;
 
 import org.apache.commons.io.IOUtils;
 
+import com.ibm.icu.text.CharsetDetector;
+import com.ibm.icu.text.CharsetMatch;
+import com.mendix.core.Core;
+import com.mendix.core.CoreException;
+import com.mendix.core.CoreRuntimeException;
+import com.mendix.logging.ILogNode;
+import com.mendix.systemwideinterfaces.core.IContext;
+import com.mendix.systemwideinterfaces.core.meta.IMetaPrimitive.PrimitiveType;
+import com.opencsv.CSVParser;
+
+import bestpractices.proxies.Customer;
 import replication.MetaInfo;
 import replication.ReplicationSettings;
 import replication.ReplicationSettings.KeyType;
@@ -24,17 +35,6 @@ import replication.ValueParser;
 import replication.implementation.CustomReplicationSettings;
 import replication.implementation.ErrorHandler;
 import replication.interfaces.IValueParser;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-import bestpractices.proxies.Customer;
-
-import com.ibm.icu.text.CharsetDetector;
-import com.ibm.icu.text.CharsetMatch;
-import com.mendix.core.Core;
-import com.mendix.core.CoreException;
-import com.mendix.logging.ILogNode;
-import com.mendix.systemwideinterfaces.core.IContext;
-import com.mendix.systemwideinterfaces.core.meta.IMetaPrimitive.PrimitiveType;
-import com.opencsv.CSVParser;
 
 
 /**
@@ -179,7 +179,7 @@ public class CSVImporter {
 
 		@Override
 		public Object getValueFromDataSet( String column, PrimitiveType type, Object dataSet ) throws ParseException {
-			throw new NotImplementedException();
+			throw new CoreRuntimeException("getValueFromDataSet-not implemented");
 		}
 	}
 }

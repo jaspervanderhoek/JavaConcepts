@@ -37,7 +37,7 @@ public class ReplaceXToken extends CustomJavaAction<java.lang.String>
 	@java.lang.Override
 	public java.lang.String executeAction() throws Exception
 	{
-		this.TokenObject = __TokenObject == null ? null : documentgeneration.proxies.XToken.initialize(getContext(), __TokenObject);
+		this.TokenObject = this.__TokenObject == null ? null : documentgeneration.proxies.XToken.initialize(getContext(), __TokenObject);
 
 		// BEGIN USER CODE
 		return XTokenReplacer.replaceToken(this.getContext(), this.Text, this.__TokenObject, this.ValueObject);
@@ -46,6 +46,7 @@ public class ReplaceXToken extends CustomJavaAction<java.lang.String>
 
 	/**
 	 * Returns a string representation of this action
+	 * @return a string representation of this action
 	 */
 	@java.lang.Override
 	public java.lang.String toString()

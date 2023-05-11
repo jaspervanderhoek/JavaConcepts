@@ -32,7 +32,7 @@ public class CheckIfReferncedObjectExists_XToken extends CustomJavaAction<java.l
 	@java.lang.Override
 	public java.lang.Boolean executeAction() throws Exception
 	{
-		this.TokenObject = __TokenObject == null ? null : documentgeneration.proxies.XToken.initialize(getContext(), __TokenObject);
+		this.TokenObject = this.__TokenObject == null ? null : documentgeneration.proxies.XToken.initialize(getContext(), __TokenObject);
 
 		// BEGIN USER CODE
 		try
@@ -48,6 +48,7 @@ public class CheckIfReferncedObjectExists_XToken extends CustomJavaAction<java.l
 
 	/**
 	 * Returns a string representation of this action
+	 * @return a string representation of this action
 	 */
 	@java.lang.Override
 	public java.lang.String toString()

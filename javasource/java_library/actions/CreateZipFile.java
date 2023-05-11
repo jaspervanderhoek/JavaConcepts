@@ -43,12 +43,13 @@ public class CreateZipFile extends CustomJavaAction<java.lang.Boolean>
 	@java.lang.Override
 	public java.lang.Boolean executeAction() throws Exception
 	{
-		this.ExportFileList = new java.util.ArrayList<system.proxies.FileDocument>();
-		if (__ExportFileList != null)
-			for (IMendixObject __ExportFileListElement : __ExportFileList)
-				this.ExportFileList.add(system.proxies.FileDocument.initialize(getContext(), __ExportFileListElement));
+		this.ExportFileList = java.util.Optional.ofNullable(this.__ExportFileList)
+			.orElse(java.util.Collections.emptyList())
+			.stream()
+			.map(__ExportFileListElement -> system.proxies.FileDocument.initialize(getContext(), __ExportFileListElement))
+			.collect(java.util.stream.Collectors.toList());
 
-		this.TargetZipDocument = __TargetZipDocument == null ? null : system.proxies.FileDocument.initialize(getContext(), __TargetZipDocument);
+		this.TargetZipDocument = this.__TargetZipDocument == null ? null : system.proxies.FileDocument.initialize(getContext(), __TargetZipDocument);
 
 		// BEGIN USER CODE
 		// Create a buffer for reading the files
@@ -103,6 +104,7 @@ public class CreateZipFile extends CustomJavaAction<java.lang.Boolean>
 
 	/**
 	 * Returns a string representation of this action
+	 * @return a string representation of this action
 	 */
 	@java.lang.Override
 	public java.lang.String toString()

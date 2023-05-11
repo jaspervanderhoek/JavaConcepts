@@ -21,6 +21,7 @@ import org.sadun.util.polling.FileFoundEvent;
 import system.proxies.FileDocument;
 import com.mendix.core.Core;
 import com.mendix.core.CoreException;
+import com.mendix.core.CoreRuntimeException;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IDataType;
 import com.mendix.systemwideinterfaces.core.IDataType.DataTypeEnum;
@@ -78,6 +79,7 @@ public class StartPollingFolder extends CustomJavaAction<java.lang.Boolean>
 
 	/**
 	 * Returns a string representation of this action
+	 * @return a string representation of this action
 	 */
 	@java.lang.Override
 	public java.lang.String toString()
@@ -113,12 +115,12 @@ public class FPM extends BasePollManager {
 					}
 				}
 			}
-			Core.execute(Core.createSystemContext(), this.microflowName, paramMap);
+			Core.microflowCall(this.microflowName).withParams(paramMap).execute(Core.createSystemContext());
 			
 			Thread.sleep(1);
 		} catch (IOException e) {
 			Core.getLogger(this.toString()).error(e);
-		} catch (CoreException e) {
+		} catch (CoreRuntimeException e) {
 			Core.getLogger(this.toString()).error(e);
 		} catch (InterruptedException e) {
 			Core.getLogger(this.toString()).error(e);

@@ -44,7 +44,7 @@ public class ExtractZipfile extends CustomJavaAction<java.util.List<IMendixObjec
 	@java.lang.Override
 	public java.util.List<IMendixObject> executeAction() throws Exception
 	{
-		this.ImportZipFile = __ImportZipFile == null ? null : system.proxies.FileDocument.initialize(getContext(), __ImportZipFile);
+		this.ImportZipFile = this.__ImportZipFile == null ? null : system.proxies.FileDocument.initialize(getContext(), __ImportZipFile);
 
 		// BEGIN USER CODE
 		ArrayList<IMendixObject> ouputList = new ArrayList<IMendixObject>();
@@ -110,6 +110,7 @@ public class ExtractZipfile extends CustomJavaAction<java.util.List<IMendixObjec
 
 	/**
 	 * Returns a string representation of this action
+	 * @return a string representation of this action
 	 */
 	@java.lang.Override
 	public java.lang.String toString()
