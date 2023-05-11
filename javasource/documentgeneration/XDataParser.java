@@ -1,18 +1,16 @@
 package documentgeneration;
 
+import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-
-
 import com.mendix.core.Core;
 import com.mendix.core.objectmanagement.member.MendixAutoNumber;
 import com.mendix.core.objectmanagement.member.MendixBoolean;
-import com.mendix.core.objectmanagement.member.MendixCurrency;
 import com.mendix.core.objectmanagement.member.MendixDateTime;
+import com.mendix.core.objectmanagement.member.MendixDecimal;
 import com.mendix.core.objectmanagement.member.MendixEnum;
-import com.mendix.core.objectmanagement.member.MendixFloat;
 import com.mendix.core.objectmanagement.member.MendixHashString;
 import com.mendix.core.objectmanagement.member.MendixInteger;
 import com.mendix.core.objectmanagement.member.MendixLong;
@@ -90,9 +88,9 @@ public class XDataParser
 	            {
 	                return Boolean.toString(((MendixBoolean) value).getValue(context));
 	            }
-	            else if (value instanceof MendixCurrency)
+	            else if (value instanceof MendixDecimal)
 	            {
-	            	String val =  Double.toString(((MendixCurrency) value).getValue(context));
+	            	String val =  ((MendixDecimal) value).getValue(context).toString();
 	            	Double parseback = Double.parseDouble(val);
 	            	if (format != null && format.equals(documentgeneration.proxies.X_ParseFormat.NumberGrouping.toString()))
 	            	{
@@ -128,20 +126,6 @@ public class XDataParser
 	                    Core.getLogger("TokenReplacer").warn(e);
 	                    return enumeration.getValue(context);
 	                }
-	            }
-	            else if (value instanceof MendixFloat)
-	            {
-	            	String val =  Double.toString(((MendixFloat) value).getValue(context));
-	            	Double parseback = Double.parseDouble(val);
-	            	if (format != null && format.equals(documentgeneration.proxies.X_ParseFormat.NumberGrouping.toString()))
-	            	{
-	            		return getFormattedNumber(context, parseback, 2, 5,true);
-	            	}
-	            	else
-	            	{
-	                return getFormattedNumber(context, parseback, 2, 5,false);
-	            	}
-	            	// return Double.toString(((MendixFloat) value).getValue(context));
 	            }
 	            else if (value instanceof MendixHashString)
 	            {

@@ -95,7 +95,7 @@ public class CreateLogObject {
 		IMendixObject userObject = null;
 		
 		try {
-			userObject = context.getSession().getUser().getMendixObject();
+			userObject = context.getSession().getUser(context).getMendixObject();
 		} catch (Exception e) {
 			try {
 				List<IMendixObject> administrators = Core.retrieveXPathQuery(sudoContext, "//" + User.getType() + "[" + User.MemberNames.Name + "='" + Core.getConfiguration().getAdminUserName() + "']");
